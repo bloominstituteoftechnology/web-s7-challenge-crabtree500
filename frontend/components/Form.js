@@ -1,5 +1,5 @@
 import { findAllByTestId } from '@testing-library/react'
-import { getInitialValue } from '@testing-library/user-event/dist/types/document/UI'
+//import { getInitialValue } from '@testing-library/user-event/dist/types/document/UI'
 import e from 'cors'
 import React, { useEffect, useState } from 'react'
 import * as yup from "yup"
@@ -13,10 +13,10 @@ const validationErrors = {
 
 // 👇 Here you will create your schema.
 const userSchema = yup.object({
-fullName: yup.string.min(3, validationErrors.fullNameTooShort).max(20, validationErrors.fullNameTooLong),
-size: string.oneOf('S', 'M', 'L', validationErrors.sizeIncorrect),
+fullName: yup.string().min(3, validationErrors.fullNameTooShort).max(20, validationErrors.fullNameTooLong),
+size: yup.string().oneOf(['S', 'M', 'L',], validationErrors.sizeIncorrect),
 })
-// 👇 This array could help you construct your checkboxes using .map in the JSX.
+
 const toppings = [
   { topping_id: '1', text: 'Pepperoni' },
   { topping_id: '2', text: 'Green Peppers' },

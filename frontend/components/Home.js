@@ -1,4 +1,5 @@
-import React, { Link } from 'react'
+import React from 'react'
+import { Link } from 'react-router-dom'
 import pizza from './images/pizza.jpg'
 function Home() {
   return (
@@ -7,7 +8,7 @@ function Home() {
         Welcome to Bloom Pizza!
       </h2>
       {/* clicking on the img should navigate to "/order" */}
-      <Link to= "/Form">
+      <Link to= "/Order">
       <img alt="order-pizza" style={{ cursor: 'pointer' }} src={pizza} />
       </Link>
     </div>

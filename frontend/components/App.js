@@ -13,7 +13,7 @@ function App() {
         </nav>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="Order" element={<Form />} />
+          <Route path="/Order" element={<Form />} />
         </Routes>
       </div>
     </BrowserRouter>

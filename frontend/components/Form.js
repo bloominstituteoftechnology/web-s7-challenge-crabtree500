@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import * as yup from 'yup';
 import axios from 'axios';
+import { isFocusable } from '@testing-library/user-event/dist/types/utils';
 
 const validationErrors = {
   fullNameTooShort: 'Full name must be at least 3 characters',
@@ -8,10 +9,18 @@ const validationErrors = {
   sizeIncorrect: 'Size must be S or M or L',
 };
 
-const userSchema = yup.object({
-  fullName: yup.string().min(3, validationErrors.fullNameTooShort).max(20, validationErrors.fullNameTooLong),
-  size: yup.string().oneOf(['S', 'M', 'L'], validationErrors.sizeIncorrect),
-});
+const UserSchema = yup.object().shape({
+  fullName: yup.string().typeError(validationErrors.fullNameType).trim()
+    .required(validationErrors.fullNameRequired).min(3, validationErrors.fullNameMin).max(20, validationErrors.fullNameMax),
+  size: yup.string().oneOf(['S', 'M', 'L'], validationErrors.sizeOptions).required(validationErrors.sizeRequired).trim(),
+  toppings: yup.array().typeError(validationErrors.toppingsType)
+    .of(
+      yup.number().typeError(validationErrors.toppingsType)
+        .integer(validationErrors.toppingsType)
+        .min(1, validationErrors.toppingInvalid)
+        .max(5, validationErrors.toppingInvalid)
+    )
+})
 
 const toppings = [
   { topping_id: '1', text: 'Pepperoni' },
@@ -23,17 +32,19 @@ const toppings = [
 
 const getInitialValues = () => ({
   fullName: '',
-  size: '',
+  size: 'S',
   toppings: [],
 });
 
+
 export default function Form() {
   const [successMessage, setSuccessMessage] = useState(false);
+  const [IsValid, setIsValid] = useState(false);
   const [errorMessage, setErrorMessage] = useState({});
   const [formValues, setFormValues] = useState(getInitialValues())
 
   const handleChange = (e) => {
-    const { name, value, type } = e.target;
+    const { name, value } = e.target;
 
 setFormValues({
       ...formValues,
@@ -55,12 +66,13 @@ setFormValues({
     try {
       evt.preventDefault();
 
-      await userSchema.validate(formValues);
+      await UserSchema.validate(formValues);
 
       await axios.post('http://localhost:9009/api/order', formValues);
 
       setSuccessMessage(true);
       setFormValues(getInitialValues());
+      setIsValid(true);
 
     } catch (error) {
       if (error.response) {
@@ -73,12 +85,13 @@ setFormValues({
         setErrorMessage(errors);
       } else {
         setErrorMessage({ general: error.message });
+        setIsValid(false)
       }
     }
   };
 
   return (
-    <form onSubmit={onSubmit} disabled={successMessage} >
+    <form onSubmit={onSubmit} >
       <h2>Order Your Pizza</h2>
       {successMessage && <div className="success">Thank you for your order!</div>}
       {errorMessage.general && <div className="failure">{errorMessage.general}</div>}
@@ -128,7 +141,7 @@ setFormValues({
         ))}
       </div>
 
-      <button type="submit" >
+      <button type="submit" disabled={!IsFormValid} >
         Submit
       </button>
     </form>

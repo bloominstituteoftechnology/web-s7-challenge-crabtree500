@@ -1,25 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect,  useState } from 'react';
 import * as yup from 'yup';
 import axios from 'axios';
-import { isFocusable } from '@testing-library/user-event/dist/types/utils';
 
 const validationErrors = {
-  fullNameTooShort: 'Full name must be at least 3 characters',
-  fullNameTooLong: 'Full name must be at most 20 characters',
+  fullNameMin: 'Full name must be at least 3 characters',
+  fullNameMax: 'Full name must be at most 20 characters',
   sizeIncorrect: 'Size must be S or M or L',
+
 };
 
 const UserSchema = yup.object().shape({
   fullName: yup.string().typeError(validationErrors.fullNameType).trim()
     .required(validationErrors.fullNameRequired).min(3, validationErrors.fullNameMin).max(20, validationErrors.fullNameMax),
-  size: yup.string().oneOf(['S', 'M', 'L'], validationErrors.sizeOptions).required(validationErrors.sizeRequired).trim(),
-  toppings: yup.array().typeError(validationErrors.toppingsType)
-    .of(
-      yup.number().typeError(validationErrors.toppingsType)
-        .integer(validationErrors.toppingsType)
-        .min(1, validationErrors.toppingInvalid)
-        .max(5, validationErrors.toppingInvalid)
-    )
+  size: yup.string().oneOf(['S', 'M', 'L'], validationErrors.sizeIncorrect),
 })
 
 const toppings = [
@@ -62,34 +55,36 @@ setFormValues({
     }));
   };
 
-  const onSubmit = async (evt) => {
-    try {
-      evt.preventDefault();
-
-      await UserSchema.validate(formValues);
-
-      await axios.post('http://localhost:9009/api/order', formValues);
-
-      setSuccessMessage(true);
-      setFormValues(getInitialValues());
-      setIsValid(true);
-
-    } catch (error) {
-      if (error.response) {
-        setErrorMessage(error.response.data);
-      } else if (error.inner) {
-        const errors = {};
-        error.inner.forEach((err) => {
-          errors[err.path] = err.message;
-        });
-        setErrorMessage(errors);
-      } else {
-        setErrorMessage({ general: error.message });
-        setIsValid(false)
-      }
-    }
+  const onSubmit = (evt) => {
+    evt.preventDefault();
+    axios.post('http://localhost:9009/api/order', formValues)
+      .then((response) => {
+        setSuccessMessage(true);
+        setFormValues(getInitialValues());
+      })
+      .catch((error) => {
+        // Handle error appropriately, maybe set an error message state
+        console.error('Error submitting form:', error);
+      });
   };
 
+  useEffect(() => {
+    const validateForm = async () => {
+      try {
+        await UserSchema.validate(formValues, { abortEarly: false });
+        setIsValid(true);
+        setErrorMessage({});
+      } catch (errors) {
+        setIsValid(false);
+        setErrorMessage(errors.inner.reduce((acc, error) => {
+          acc[error.path] = error.message;
+          return acc;
+        }, {}));
+      }
+    };
+
+    validateForm();
+  }, [formValues]);
   return (
     <form onSubmit={onSubmit} >
       <h2>Order Your Pizza</h2>
@@ -130,10 +125,10 @@ setFormValues({
         {toppings.map(({ topping_id, text }) => (
           <label key={topping_id}>
             <input
-              name={text}
+              name={topping_id}
               type="checkbox"
               onChange={handleCheckboxChange}
-              checked={formValues.toppings.includes(text)}
+              checked={formValues.toppings.includes(topping_id)}
             />
             {text}
             <br />
@@ -141,7 +136,7 @@ setFormValues({
         ))}
       </div>
 
-      <button type="submit" disabled={!IsFormValid} >
+      <button type="submit" disabled= {!IsValid}>
         Submit
       </button>
     </form>

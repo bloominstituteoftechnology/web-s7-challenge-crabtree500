@@ -14,14 +14,14 @@ describe('Sprint 7 Challenge Learner Tests', () => {
     [4] sum('1', 2) // returns 3
     [5] sum('10', '3') // returns 13
   */
-describe('test of sum', ()=> {
-  test('sums', () => {
-    expect(() => sum().toThrowError('pass valid numbers'));
-    expect(() => sum(2, 'seven')).toThrowError('pass valid numbers');
-    expect(() => sum(1, 3)).toBe(4);
-    expect(() => sum('1', 2)).toBe(3);
-    expect(() => sum('10', '3')).toBe(13);
-  })
+  describe('test of sum', () => {
+      test('sums', () => {
+        expect(() => sum()).toThrowError('pass valid numbers');
+        expect(() => sum(2, 'seven')).toThrowError('pass valid numbers');
+        expect(sum(1, 3)).toBe(4);
+        expect(sum('1', 2)).toBe(3);
+        expect(sum('10', '3')).toBe(13);
+      });
 })
 describe('test of hello', ()=> {
   test('integration Helloworld', () => {

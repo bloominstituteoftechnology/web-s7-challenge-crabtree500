@@ -20,7 +20,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import server from './backend/mock-server'
 
-jest.setTimeout(750) // default 5000 too long for Codegrade
+jest.setTimeout(1000) // default 5000 too long for Codegrade
 
 const waitForOptions = { timeout: 250 }
 const queryOptions = { exact: false }

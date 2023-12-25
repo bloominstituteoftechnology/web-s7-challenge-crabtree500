@@ -3,9 +3,9 @@ import * as yup from 'yup';
 import axios from 'axios';
 
 const validationErrors = {
-  fullNameMin: 'Full name must be at least 3 characters',
-  fullNameMax: 'Full name must be at most 20 characters',
-  sizeIncorrect: 'Size must be S or M or L',
+  fullNameMin: 'full name must be at least 3 characters',
+  fullNameMax: 'full name must be at most 20 characters',
+  sizeIncorrect: 'size must be S or M or L',
 
 };
 

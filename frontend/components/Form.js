@@ -25,7 +25,7 @@ const toppings = [
 
 const getInitialValues = () => ({
   fullName: '',
-  size: 'S',
+  size: '',
   toppings: [],
 });
 
@@ -58,7 +58,7 @@ setFormValues({
   const onSubmit = (evt) => {
     evt.preventDefault();
     axios.post('http://localhost:9009/api/order', formValues)
-      .then((response) => {
+      .then((res) => {
         setSuccessMessage(true);
         setFormValues(getInitialValues());
       })

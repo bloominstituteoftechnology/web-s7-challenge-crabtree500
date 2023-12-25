@@ -9,11 +9,11 @@ function App() {
       <div id="app">
         <nav>
           <Link to="/">Home</Link>
-          <Link to="/Order">Order</Link>
+          <Link to="/order">Order</Link>
         </nav>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/Order" element={<Form />} />
+          <Route path="/order" element={<Form />} />
         </Routes>
       </div>
     </BrowserRouter>

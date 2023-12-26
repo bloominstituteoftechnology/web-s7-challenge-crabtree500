@@ -1,4 +1,4 @@
-import React, { useEffect,  useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as yup from 'yup';
 import axios from 'axios';
 
@@ -6,14 +6,13 @@ const validationErrors = {
   fullNameMin: 'full name must be at least 3 characters',
   fullNameMax: 'full name must be at most 20 characters',
   sizeIncorrect: 'size must be S or M or L',
-
 };
 
 const UserSchema = yup.object().shape({
   fullName: yup.string().typeError(validationErrors.fullNameType).trim()
     .required(validationErrors.fullNameRequired).min(3, validationErrors.fullNameMin).max(20, validationErrors.fullNameMax),
   size: yup.string().oneOf(['S', 'M', 'L'], validationErrors.sizeIncorrect),
-})
+});
 
 const toppings = [
   { topping_id: '1', text: 'Pepperoni' },
@@ -29,17 +28,32 @@ const getInitialValues = () => ({
   toppings: [],
 });
 
-
 export default function Form() {
   const [successMessage, setSuccessMessage] = useState(false);
   const [IsValid, setIsValid] = useState(false);
   const [errorMessage, setErrorMessage] = useState({});
-  const [formValues, setFormValues] = useState(getInitialValues())
+  const [formValues, setFormValues] = useState(getInitialValues());
+
+  // State to track whether to reset the form
+  const [resetForm, setResetForm] = useState(false);
+
+  // Effect to reset the form after a delay
+  useEffect(() => {
+    if (resetForm) {
+      const resetTimeout = setTimeout(() => {
+        setFormValues(getInitialValues());
+        setResetForm(false);
+      }, 500); // Adjust the delay (in milliseconds) as needed
+
+      // Clear the timeout if the component unmounts or if the reset button is clicked
+      return () => clearTimeout(resetTimeout);
+    }
+  }, [resetForm]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-setFormValues({
+    setFormValues({
       ...formValues,
       [name]: value,
     });
@@ -57,13 +71,13 @@ setFormValues({
 
   const onSubmit = (evt) => {
     evt.preventDefault();
+
     axios.post('http://localhost:9009/api/order', formValues)
-      .then((res) => {
+      .then(() => {
         setSuccessMessage(true);
-        setFormValues(getInitialValues());
+        setResetForm(true); // Trigger form reset after displaying success message
       })
       .catch((error) => {
-        // Handle error appropriately, maybe set an error message state
         console.error('Error submitting form:', error);
       });
   };
@@ -85,10 +99,15 @@ setFormValues({
 
     validateForm();
   }, [formValues]);
+
   return (
-    <form onSubmit={onSubmit} >
+    <form onSubmit={onSubmit}>
       <h2>Order Your Pizza</h2>
-      {successMessage && <div className="success">Thank you for your order!</div>}
+      {successMessage && (
+        <div className="success">
+          {`Thank you for your order, ${formValues.fullName}! Your ${formValues.size} pizza with ${formValues.toppings.length} toppings`}
+        </div>
+      )}
       {errorMessage.general && <div className="failure">{errorMessage.general}</div>}
 
       <div className="input-group">
@@ -136,9 +155,10 @@ setFormValues({
         ))}
       </div>
 
-      <button type="submit" disabled= {!IsValid}>
+      <button type="submit" disabled={!IsValid}>
         Submit
       </button>
     </form>
   );
 }
+

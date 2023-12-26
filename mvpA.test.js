@@ -33,7 +33,7 @@ const renderApp = ui => {
 
 beforeAll(() => { server.listen() })
 afterAll(() => { server.close() })
-beforeEach(() => { renderApp(<router><App /></router>) })
+beforeEach(() => { renderApp(<Router><App /></Router>) })
 afterEach(() => { server.resetHandlers() })
 
 describe('Sprint 7 Challenge Codegrade Tests', () => {

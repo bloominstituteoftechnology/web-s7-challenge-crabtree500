@@ -40,15 +40,10 @@ export default function Form() {
   // Effect to reset the form after a delay
   useEffect(() => {
     if (resetForm) {
-      const resetTimeout = setTimeout(() => {
-        setFormValues(getInitialValues());
-        setResetForm(false);
-      }, 500); // Adjust the delay (in milliseconds) as needed
-
-      // Clear the timeout if the component unmounts or if the reset button is clicked
-      return () => clearTimeout(resetTimeout);
+      setFormValues(getInitialValues());
+      setResetForm(false);
     }
-  }, [resetForm]);
+  }, [resetForm, formValues]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

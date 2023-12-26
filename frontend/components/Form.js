@@ -36,14 +36,16 @@ export default function Form() {
 
   // State to track whether to reset the form
   const [resetForm, setResetForm] = useState(false);
-
-  // Effect to reset the form after a delay
+ 
   useEffect(() => {
-    if (resetForm) {
+    const resetTimeout = setTimeout(() => {
       setFormValues(getInitialValues());
       setResetForm(false);
-    }
-  }, [resetForm, formValues]);
+      setSuccessMessage(false);
+    }, 3000);
+
+    return () => clearTimeout(resetTimeout);
+  }, [resetForm]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,8 +71,8 @@ export default function Form() {
 
     axios.post('http://localhost:9009/api/order', formValues)
       .then(() => {
-        setSuccessMessage(true);
-        setResetForm(true); // Trigger form reset after displaying success message
+       setSuccessMessage(true);
+        setResetForm(true); // Trigger form reset immediately after displaying success message
       })
       .catch((error) => {
         console.error('Error submitting form:', error);

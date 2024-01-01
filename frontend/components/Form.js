@@ -14,6 +14,12 @@ const UserSchema = yup.object().shape({
   size: yup.string().oneOf(['S', 'M', 'L'], validationErrors.sizeIncorrect),
 });
 
+const sizeMapping = {
+  'S': 'Small',
+  'M': 'Medium',
+  'L': 'Large',
+};
+
 const toppings = [
   { topping_id: '1', text: 'Pepperoni' },
   { topping_id: '2', text: 'Green Peppers' },
@@ -32,6 +38,7 @@ export default function Form() {
   const [successMessage, setSuccessMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState({});
   const [formValues, setFormValues] = useState(getInitialValues());
+  const [submittedValues, setSubmittedValues] = useState(null);
 
   const isValid = UserSchema.isValidSync(formValues);
 
@@ -55,17 +62,19 @@ export default function Form() {
 
   const onSubmit = (evt) => {
     evt.preventDefault();
-
+  
+   
     axios.post('http://localhost:9009/api/order', formValues)
       .then(() => {
         setSuccessMessage(true);
+        setSubmittedValues({...formValues});
         setFormValues(getInitialValues()); // Reset the form on successful submission
       })
       .catch((error) => {
         console.error('Error submitting form:', error);
       });
+  
   };
-
   useEffect(() => {
     const validateForm = () => {
       try {
@@ -85,10 +94,10 @@ export default function Form() {
   return (
     <form onSubmit={onSubmit}>
       <h2>Order Your Pizza</h2>
-      {successMessage && (
+      {successMessage && submittedValues && (
         <div className="success">
-          {`Thank you for your order, ${formValues.fullName}! Your ${formValues.size} pizza with ${
-            formValues.toppings.length > 0 ? formValues.toppings.length + ' toppings' : 'no toppings'
+          {`Thank you for your order, ${submittedValues.fullName}! Your ${sizeMapping[submittedValues.size]} pizza with ${
+            submittedValues.toppings.length > 0 ? submittedValues.toppings.length + ' toppings' : 'no toppings'
           }`}
         </div>
       )}

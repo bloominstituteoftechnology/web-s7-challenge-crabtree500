@@ -96,9 +96,8 @@ export default function Form() {
       <h2>Order Your Pizza</h2>
       {successMessage && submittedValues && (
         <div className="success">
-          {`Thank you for your order, ${submittedValues.fullName}! Your ${sizeMapping[submittedValues.size]} pizza with ${
-            submittedValues.toppings.length > 0 ? submittedValues.toppings.length + ' toppings' : 'no toppings'
-          }`}
+          {`Thank you for your order, ${submittedValues.fullName}! Your ${sizeMapping[submittedValues.size]} pizza with ${submittedValues.toppings.length || 'no'} \
+topping${submittedValues.toppings.length === 1 ? '' : 's'} is on the way.`}
         </div>
       )}
       {errorMessage.general && <div className="failure">{errorMessage.general}</div>}

@@ -125,9 +125,9 @@ export default function Form() {
           <br />
           <select id="size" name="size" value={formValues.size} onChange={handleChange}>
             <option value="">----Choose Size----</option>
-            <option value="S">Small</option>
-            <option value="M">Medium</option>
-            <option value="L">Large</option>
+            <option value="S">small</option>
+            <option value="M">medium</option>
+            <option value="L">large</option>
           </select>
         </div>
         {errorMessage.size && <div className="error">{errorMessage.size}</div>}

@@ -42,7 +42,7 @@ export default function Form() {
       setFormValues(getInitialValues());
       setResetForm(false);
       setSuccessMessage(false);
-    }, 3000);
+    }, 700);
 
     return () => clearTimeout(resetTimeout);
   }, [resetForm]);

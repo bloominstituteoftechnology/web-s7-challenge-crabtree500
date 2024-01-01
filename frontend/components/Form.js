@@ -30,26 +30,13 @@ const getInitialValues = () => ({
 
 export default function Form() {
   const [successMessage, setSuccessMessage] = useState(false);
-  const [IsValid, setIsValid] = useState(false);
   const [errorMessage, setErrorMessage] = useState({});
   const [formValues, setFormValues] = useState(getInitialValues());
 
-  // State to track whether to reset the form
-  const [resetForm, setResetForm] = useState(false);
- 
-  useEffect(() => {
-    const resetTimeout = setTimeout(() => {
-      setFormValues(getInitialValues());
-      setResetForm(false);
-      setSuccessMessage(false);
-    }, 700);
-
-    return () => clearTimeout(resetTimeout);
-  }, [resetForm]);
+  const isValid = UserSchema.isValidSync(formValues);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setFormValues({
       ...formValues,
       [name]: value,
@@ -71,8 +58,8 @@ export default function Form() {
 
     axios.post('http://localhost:9009/api/order', formValues)
       .then(() => {
-       setSuccessMessage(true);
-        setResetForm(true); // Trigger form reset immediately after displaying success message
+        setSuccessMessage(true);
+        setFormValues(getInitialValues()); // Reset the form on successful submission
       })
       .catch((error) => {
         console.error('Error submitting form:', error);
@@ -80,13 +67,11 @@ export default function Form() {
   };
 
   useEffect(() => {
-    const validateForm = async () => {
+    const validateForm = () => {
       try {
-        await UserSchema.validate(formValues, { abortEarly: false });
-        setIsValid(true);
+        UserSchema.validateSync(formValues, { abortEarly: false });
         setErrorMessage({});
       } catch (errors) {
-        setIsValid(false);
         setErrorMessage(errors.inner.reduce((acc, error) => {
           acc[error.path] = error.message;
           return acc;
@@ -102,10 +87,9 @@ export default function Form() {
       <h2>Order Your Pizza</h2>
       {successMessage && (
         <div className="success">
-         {`Thank you for your order, ${formValues.fullName}! Your ${formValues.size} pizza with ${
-  formValues.toppings.length > 0 ? formValues.toppings.length + ' toppings' : 'no toppings'
-}`}
-
+          {`Thank you for your order, ${formValues.fullName}! Your ${formValues.size} pizza with ${
+            formValues.toppings.length > 0 ? formValues.toppings.length + ' toppings' : 'no toppings'
+          }`}
         </div>
       )}
       {errorMessage.general && <div className="failure">{errorMessage.general}</div>}
@@ -132,9 +116,9 @@ export default function Form() {
           <br />
           <select id="size" name="size" value={formValues.size} onChange={handleChange}>
             <option value="">----Choose Size----</option>
-            <option value="S">small</option>
-            <option value="M">medium</option>
-            <option value="L">large</option>
+            <option value="S">Small</option>
+            <option value="M">Medium</option>
+            <option value="L">Large</option>
           </select>
         </div>
         {errorMessage.size && <div className="error">{errorMessage.size}</div>}
@@ -155,10 +139,9 @@ export default function Form() {
         ))}
       </div>
 
-      <button type="submit" disabled={!IsValid}>
+      <button type="submit" disabled={!isValid}>
         Submit
       </button>
     </form>
   );
 }
-

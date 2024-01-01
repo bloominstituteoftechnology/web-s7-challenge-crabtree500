@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
-import Home from './Home'; // Import your Home component
-import Form from './Form'; // Import your Form component
+import Home from './Home'; 
+import Form from './Form'; 
 
 function App() {
   return (

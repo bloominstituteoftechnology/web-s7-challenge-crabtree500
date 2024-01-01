@@ -68,7 +68,7 @@ export default function Form() {
       .then(() => {
         setSuccessMessage(true);
         setSubmittedValues({...formValues});
-        setFormValues(getInitialValues()); // Reset the form on successful submission
+        setFormValues(getInitialValues()); 
       })
       .catch((error) => {
         console.error('Error submitting form:', error);
